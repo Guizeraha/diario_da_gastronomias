@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Diário da Gastronomia</title>
+    
+    <style>
+        /* Importando as fontes */
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Oswald:wght@500;700&display=swap');
+
+        /* --- PALETA DE CORES DA LOGO --- */
+        :root {
+            --cor-azul-primaria: #1a3c5a; /* O azul escuro e sóbrio da logo */
+            --cor-terracota: #c05030;    /* O laranja queimado do chapéu */
+            --cor-creme-fundo: #D8C8B0;  
+            --cor-papel: #fdfbf7;        /* Papel do livro */
+        }
+
+        /* RESET BÁSICO */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--cor-creme-fundo); 
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* --- CONTAINER DO LIVRO --- */
+        .caderno-container {
+            display: flex;
+            width: 1300px; 
+            height: 900px;
+            max-width: 98vw;
+            position: relative;
+            margin: auto; 
+            box-shadow: 0 20px 50px rgba(26, 60, 90, 0.4); 
+            background-color: var(--cor-papel);
+            /* TEXTURA DE PAPEL */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        /* --- PÁGINAS --- */
+        .pagina {
+            height: 100%;
+            flex: 1; 
+            position: relative;
+            padding: 60px 60px;
+            z-index: 1; 
+        }
+
+        /* Pauta para a página da esquerda e da direita (quando em modo sumário) */
+        .pagina-esquerda, .pagina-direita.modo-sumario {
+            /* Pauta do caderno com as cores da logo */
+            background-image: 
+                /* Margem vertical cor Terracota */
+                linear-gradient(90deg, transparent 39px, var(--cor-terracota) 40px, transparent 41px),
+                /* Linhas horizontais azul bem clarinho */
+                linear-gradient(rgba(26, 60, 90, 0.15) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 40px;
+            background-attachment: local;
+        }
+
+        .pagina-esquerda {
+            border-right: 2px solid var(--cor-azul-primaria); /* Divisória central azul */
+        }
+        
+        .pagina-direita {
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px; 
+            padding-top: 40px; 
+            border-left: 2px solid var(--cor-azul-primaria); /* Divisória central azul */
+        }
+
+        /* Quando em modo sumário, a página direita deve se comportar como a esquerda */
+        .pagina-direita.modo-sumario {
+            display: block;
+            padding: 60px 60px;
+            align-items: flex-start;
+            gap: 0;
+        }
+
+        /* --- ESTILOS DE TEXTO E ELEMENTOS --- */
+        .header-aula {
+            margin-bottom: 30px;
+            border-bottom: 4px solid var(--cor-azul-primaria);
+            padding-bottom: 15px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .titulo-principal {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            text-transform: uppercase;
+            color: var(--cor-azul-primaria);
+            margin: 0;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .data-header { font-family: 'Caveat', cursive; font-size: 28px; color: var(--cor-azul-primaria); opacity: 0.8; }
+
+        .texto-manuscrito {
+            font-family: 'Caveat', cursive;
+            font-size: 32px;
+            line-height: 40px; 
+            color: var(--cor-azul-primaria);
+            margin-left: 5px;
+            min-height: 500px; 
+        }
+        
+        .logo-intro {
+            display: block;
+            max-width: 300px;
+            width: 100%;
+            margin: 0 auto 30px auto;
+            filter: drop-shadow(0px 5px 10px rgba(26, 60, 90, 0.2));
+        }
+
+        /* --- POLAROIDS --- */
+        #container-fotos { display: flex; flex-direction: column; align-items: center; gap: 40px; width: 100%; }
+        
+        .polaroid {
+            background-color: #fff;
+            padding: 15px 15px 50px 15px;
+            box-shadow: 0 8px 15px rgba(26, 60, 90, 0.15);
+            width: 250px;
+            max-width: 100%;
+            text-align: center;
+            transform: rotate(2deg); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #eaeaea;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .foto-2 { transform: rotate(-3deg); }
+        .polaroid:hover { z-index: 10; box-shadow: 0 15px 35px rgba(26, 60, 90, 0.25); }
+        .polaroid img { width: 100%; height: auto; display: block; filter: sepia(0.1); }
+        .legenda { font-family: 'Caveat', cursive; margin-top: 20px; color: var(--cor-azul-primaria); font-size: 26px; }
+        
+        .fita {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 90px; height: 35px; 
+            background-color: var(--cor-terracota); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0.9;
+        }
+        .fita-azul { background-color: var(--cor-azul-primaria); }
+
+        /* --- NAVEGAÇÃO DESKTOP --- */
+        .btn-navegacao-desk {
+            position: absolute; bottom: 40px; font-family: 'Caveat', cursive; font-size: 32px; font-weight: bold;
+            color: var(--cor-azul-primaria); cursor: pointer; display: flex; align-items: center; gap: 15px; z-index: 20;
+            background-color: rgba(244, 241, 232, 0.9); padding: 8px 20px; border-radius: 12px; transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .btn-navegacao-desk:hover { 
+            color: var(--cor-terracota); 
+            border-color: var(--cor-terracota);
+            transform: scale(1.02); 
+        }
+        .nav-proxima { right: 50px; } .nav-anterior { left: 50px; } 
+        .icone-seta { font-size: 50px; line-height: 30px; margin-top: -5px; }
+        .controles-mobile-wrapper { display: none; }
+
+        /* --- ESTILOS DO SUMÁRIO --- */
+        .lista-sumario { list-style: none; padding: 0; margin-top: 30px; }
+        .item-sumario {
+            font-family: 'Caveat', cursive; font-size: 36px; color: var(--cor-azul-primaria); padding: 15px 0;
+            border-bottom: 2px dashed rgba(26, 60, 90, 0.3); cursor: pointer; display: flex; justify-content: space-between; transition: all 0.2s;
+        }
+        .item-sumario:hover { color: var(--cor-terracota); padding-left: 10px; }
+        .pg-numero { color: var(--cor-azul-primaria); opacity: 0.6; font-size: 30px; }
+
+        .btn-topo-sumario {
+            position: absolute; top: 30px; right: 40px; font-family: 'Caveat', cursive; font-size: 26px;
+            color: var(--cor-azul-primaria); opacity: 0.7; cursor: pointer; z-index: 25; transition: all 0.2s;
+        }
+        .btn-topo-sumario:hover { color: var(--cor-terracota); opacity: 1; }
+
+        /* --- CSS EXTRA PARA O SUMÁRIO NA DIREITA --- */
+        #conteudo-direita-extra {
+            width: 100%;
+            display: block; 
+            /* Remove margin-top extra para alinhar com a esquerda */
+            margin-top: 0;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(26, 60, 90, 0.85); 
+            z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-content { position: relative; max-width: 90%; max-height: 90%; }
+        .modal-polaroid { width: auto; max-width: 800px; transform: rotate(0deg) !important; cursor: default; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        
+        /* Botão fechar padrão (Desktop) */
+        .close-btn { position: absolute; top: -40px; right: -40px; font-size: 40px; color: white; cursor: pointer; }
+
+        /* --- ANIMAÇÕES --- */
+        .animar-conteudo {
+            opacity: 1; transform: translateY(0px); filter: blur(0px); transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .conteudo-oculto {
+            opacity: 0; transform: translateY(15px); filter: blur(4px);
+        }
+
+        /* =========================================
+           REFINAMENTO MOBILE
+           ========================================= */
+        @media (max-width: 1000px) {
+            body { padding: 0; align-items: flex-start; }
+            .caderno-container { flex-direction: column; width: 100%; height: auto; max-width: 100%; margin: 0; box-shadow: none; border-radius: 0; }
+
+            .pagina-esquerda, .pagina-direita.modo-sumario { 
+                width: 100%; padding: 30px 20px 20px 20px; border-radius: 0; border: none;
+                background-image: linear-gradient(rgba(26, 60, 90, 0.15) 1px, transparent 1px);
+                background-size: 100% 30px;
+            }
+            
+            .pagina-direita { 
+                width: 100%; border-radius: 0; padding: 30px 20px 120px 20px; justify-content: flex-start;
+                border-top: 3px dashed var(--cor-azul-primaria); 
+                border-left: none;
+            }
+            
+            .titulo-principal { font-size: 32px; text-align: center; line-height: 1.2; }
+            .data-header { display: block; text-align: center; margin-top: 5px; }
+            .header-aula { border-bottom: 2px solid var(--cor-azul-primaria); flex-direction: column; align-items: center; margin-bottom: 20px; }
+            
+            .texto-manuscrito { font-size: 24px; line-height: 30px; min-height: auto; text-align: justify; }
+
+            #container-fotos { gap: 50px; margin-top: 20px; }
+            .polaroid { width: 90%; max-width: 340px; }
+            .btn-navegacao-desk { display: none !important; }
+            
+            .controles-mobile-wrapper { 
+                display: flex; position: fixed; bottom: 25px; 
+                margin-bottom: env(safe-area-inset-bottom);
+                left: 50%; transform: translateX(-50%);
+                width: auto; min-width: 300px;
+                background: var(--cor-azul-primaria);
+                border-radius: 50px;
+                box-shadow: 0 10px 25px rgba(26, 60, 90, 0.4); 
+                padding: 12px 35px; justify-content: space-between; align-items: center; gap: 20px; z-index: 900;
+                border: 2px solid rgba(255,255,255,0.1);
+            }
+            
+            .btn-nav-mob { 
+                font-family: 'Caveat', cursive; font-size: 24px; font-weight: bold; 
+                color: #ffffff; background: none; border: none; display: flex; align-items: center; gap: 8px; cursor: pointer;
+                transition: transform 0.1s ease, color 0.1s ease; -webkit-tap-highlight-color: transparent; 
+            }
+            .btn-nav-mob:active { transform: scale(0.9); color: var(--cor-terracota); }
+
+            .icone-seta { font-size: 28px; }
+            .divisoria-mob { width: 1px; height: 20px; background: rgba(255,255,255,0.3); }
+
+            .item-sumario { font-size: 22px; padding: 12px 0; }
+            .btn-topo-sumario { position: relative; top: 0; right: 0; text-align: center; margin-bottom: 20px; display: block; width: 100%; background: rgba(26, 60, 90, 0.1); padding: 10px; border-radius: 8px;}
+            
+            .modal-content { width: 95%; max-width: 400px; } 
+            .modal-polaroid { width: 100%; transform: none !important; }
+            
+            /* BOTÃO FECHAR MOBILE (Sem o círculo laranja, igual PC) */
+            .close-btn { 
+                position: absolute; 
+                top: -50px; 
+                right: 0px; 
+                color: #ffffff; 
+                background: transparent; /* Remove fundo laranja */
+                border: none; /* Remove borda */
+                width: auto; /* Reseta largura */
+                height: auto; /* Reseta altura */
+                border-radius: 0; /* Remove círculo */
+                text-align: right; 
+                line-height: normal; 
+                font-size: 40px; 
+                cursor: pointer;
+                box-shadow: none; /* Remove sombra */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <div class="polaroid modal-polaroid">
+                <div class="fita"></div>
+                <img id="modal-img" src="" alt="">
+                <div class="legenda" id="modal-legenda"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="caderno-container">
+        
+        <div class="pagina pagina-esquerda">
+            
+            <div id="btn-ir-sumario-mobile" class="btn-topo-sumario" onclick="irParaPagina(1)" style="display:none;">↰ Sumário</div>
+            
+            <div id="bloco-esquerda" class="animar-conteudo">
+                <div class="header-aula">
+                    <h1 class="titulo-principal" id="titulo">Carregando...</h1>
+                    <span class="data-header" id="data"></span>
+                </div>
+                
+                <div id="container-logo-intro"></div>
+
+                <div class="texto-manuscrito" id="texto"></div>
+            </div>
+
+            <div id="btn-voltar-desk" class="btn-navegacao-desk nav-anterior" onclick="mudarPagina(-1)">
+                <span class="icone-seta">←</span> Anterior
+            </div>
+        </div>
+
+        <div class="pagina pagina-direita">
+            
+            <div id="btn-ir-sumario" class="btn-topo-sumario" onclick="irParaPagina(1)">↰ Voltar ao Sumário</div>
+            
+            <div id="bloco-direita" class="animar-conteudo">
+                <div id="container-fotos">
+                    <div class="polaroid foto-1">
+                        <div class="fita"></div>
+                        <img id="img1" src="" alt="Foto 1">
+                        <div class="legenda" id="legenda1">...</div>
+                    </div>
+
+                    <div class="polaroid foto-2">
+                        <div class="fita fita-azul"></div>
+                        <img id="img2" src="" alt="Foto 2">
+                        <div class="legenda" id="legenda2">...</div>
+                    </div>
+                </div>
+                
+                <div id="conteudo-direita-extra" class="texto-manuscrito" style="display:none;"></div>
+            </div>
+
+            <div id="btn-avancar-desk" class="btn-navegacao-desk nav-proxima" onclick="mudarPagina(1)">
+                Próxima <span class="icone-seta">→</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="controles-mobile-wrapper">
+        <div id="btn-voltar-mob" class="btn-nav-mob" onclick="mudarPagina(-1)"><span class="icone-seta">←</span> Anterior</div>
+        <div class="divisoria-mob"></div> 
+        <div id="btn-avancar-mob" class="btn-nav-mob" onclick="mudarPagina(1)">Próxima <span class="icone-seta">→</span></div>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÃO DO SUMÁRIO (8 ESQUERDA / 9 DIREITA) ---
+        const ITENS_ESQUERDA = 8;
+        const ITENS_DIREITA = 9;
+        const ITENS_POR_VISUALIZACAO = ITENS_ESQUERDA + ITENS_DIREITA; // Total 17 por página dupla
+        
+        // --- DADOS DAS AULAS ---
+        const aulasReais = [
+            {
+                titulo: "1° Aula Do Projeto Integrador",
+                data: "05/09/25",
+                texto: `Primeira aula sobre o Projeto Integrador com a professora Anna. Conhecemos os temas geradores e começamos a nos inteirar deles.`,
+                img1: "src/images/projeto0102.jpeg", leg1: "O início de tudo",
+                img2: "src/images/projeto0101.jpeg", leg2: "Primeira Vez Na Cozinha!"
+            },
+            {
+                titulo: "História Da Gastronomia",
+                data: "10/09/25",
+                texto: `Aula com a professora Adriana. Montamos cartazes sobre a História da Gastronomia.`,
+                img1: "src/images/historia01.jpeg", leg1: "Montagem Dos Cartazes",
+                img2: "src/images/historia02.jpeg", leg2: "Trabalheira !!"
+            },
+            {
+                titulo: "Personalização Dos Aventais",
+                data: "12/09/25",
+                texto: `Aula com a professora Anna. Usamos nossa criatividade para pintar aventais.`,
+                img1: "src/images/Avental01.jpeg", leg1: "Turma Com os Aventais",
+                img2: "src/images/avental02.jpeg", leg2: "Vanderléia e Seu Avental"
+            },
+            {
+                titulo: "2° Aula Do Projeto Integrador",
+                data: "19/09/25",
+                texto: `Aula do Projeto Integrador com o professor Renan. Dividimos os grupos e começamos e pensar sobre o projeto. <br>  Integrantes: Gleice, Guilherme e Nathália.`,
+                img1: "src/images/Originais.jpeg", leg1: "Formação Inicial do Grupo",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "3° Aula Do Projeto Integrador",
+                data: "26/09/25",
+                texto: `Projeto Integrador com o professor Renan.<br> Estipulamos algumas metas a serem atingidas através da plataforma Trello: prototipar a ideia de captura, tentar formatos de gravação na aula do dia 30/10, e definir um nome para o projeto.`,
+                img1: "src/images/fotoal.jpeg", leg1: "Sala de Aula",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Primeiros Testes do Pojeto",
+                data: "30/09/25",
+                texto: `Conforme uma das metas estipuladas na aula do dia 26/09, testamos formatos para nossos vídeos e definimos os dois iniciais: vídeo cinematográfico e vídeo narrado.<br> <br> Nessa Aula, do dia 30/09,  Aprendemos a afiar facas e cortes basicos da cozinha.`,
+                img1: "src/images/afiacao.jpg", leg1: "Afiação De Faca",
+                img2: "src/images/primeirovideo.jpg", leg2: "Primeiros Testes"
+            },
+            {
+                titulo: "Aula De Medidas",
+                data: "01/10/25",
+                texto: `Hoje tivemos uma aula prática na cozinha sobre medidas.<br> O objetivo foi entender como as medidas caseiras podem variar em peso e volume dependendo do ingrediente utilizado, e por isso é tão importante pesar cada insumo corretamente.<br> Essa experiência mostrou que confiar apenas em colheres, xícaras ou outros utensílios pode gerar diferenças significativas nas receitas.<br> Fizemos Bolos !!`,
+                img1: "src/images/bolos0110.jpeg", leg1: "Bolos Produzidos !!",
+                img2: "src/images/bolos02.jpeg", leg2: "Hora de Comer !!"
+            },
+            {
+                titulo: "Aula De Cortes",
+                data: "02/10/25",
+                texto: `Também continuamos treinando técnicas de corte, como brunoise, julienne, batonnet, entre outras.<br><br> Ao final da aula, utilizamos esses cortes para preparar diferentes sopas e caldos, aproveitando de forma prática o que foi aprendido.`,
+                img1: "src/images/cortenat.jpeg", leg1: "Cortes Perfeitos kkkk",
+                img2: "src/images/sopa.jpeg", leg2: "Sopa Deliciosa"
+            },
+            {
+                titulo: "Caldos",
+                data: "03/10/25",
+                texto: `Nos dias 03/10 e 06/10, trabalhamos com caldos. Estudamos seus diferentes usos e também técnicas importantes, como a clarificação, que é utilizada para deixar o caldo mais limpo, transparente e sofisticado. Essa prática ajudou a compreender como a técnica influencia diretamente na qualidade final da preparação.`,
+                img1: "src/images/caldos.jpeg", leg1: "Caldos Produzidos",
+                img2: "src/images/comer01.jpeg", leg2: "A Melhor Hora !!"
+            },
+            {
+                titulo: "Abertura Do Instagram",
+                data: "07/10/25",
+                texto: `Também abrimos nosso perfil no Instagram e fizemos a primeira publicação. <br><br> Na aula do dia, aprendemos uma das técnicas mais importantes na cozinha, o concassé, que consiste em retirar a pele de legumes ou frutas, geralmente por meio de um processo de escaldar e resfriar, para facilitar o corte e melhorar a apresentação dos preparos.`,
+                img1: "src/images/instagram.jpeg", leg1: "Nosso Insta !!",
+                img2: "src/images/concasse.jpeg", leg2: "Mi praticando"
+            },
+            {
+                titulo: "Novas Integrantes !!",
+                data: "09/10/25",
+                texto: `Adição de duas integrantes ao grupo: Milena e Vanderléia.<br><br> Publicação de vídeo sobre o corte brunoise.<br><br>Hoje o professor ensinou diferentes técnicas de preparo de ovos, como ovo frito, ovo pochê, ovo mollet e ovo mexido cremoso. Durante a aula, ele também compartilhou dicas e técnicas importantes para garantir o ponto correto, a textura ideal e um melhor resultado em cada tipo de preparo`,
+                img1: "src/images/nossa_turma.jpeg", leg1: "Agora Estamos Completos  !!",
+                img2: "src/images/ovo.jpeg", leg2: "Gui 0 ovo 1 kkkk"
+            },
+            {
+                titulo: "Praticando",
+                data: "10/10/25",
+                texto: `Colocamos em prática tudo o que aprendemos na aula anterior sobre preparos com ovos, aplicando as técnicas ensinadas pelo professor.<br><br>
+    Também fizemos a publicação de uma nova foto no Instagram, desta vez com o grupo completo, agora formado por cinco participantes.`,
+                img1: "src/images/Gle.jpeg", leg1: "Gleice Arrasou !!",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Nota Dos Autores",
+                data: "11/10/25",
+                texto: `Como parte do projeto, criamos um Instagram e começamos a alimentá-lo com conteúdo relacionado às nossas aulas e atividades. Agora estamos planejando ideias de vídeos para produzir que fujam um pouco do óbvio , o que tem sido um desafio maior, pois exige mais criatividade, organização e cuidado com a apresentação. Mesmo assim, estamos animados para desenvolver materiais que representem bem nosso aprendizado.`,
+                img1: "src/images/logo.jpeg", leg1: "Diário da Gastronomias",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Marinadas",
+                data: "13/10/25",
+                texto: `Na aula de hoje, aprendemos sobre marinadas e sua importância, compreendendo como elas realçam sabor, amaciam proteínas e influenciam o resultado final dos pratos. <br><br>No período da tarde, publicamos um vídeo no Instagram sobre as marcas formativas do Senac, registrando mais uma etapa das nossas atividades.`,
+                img1: "src/images/marinada01.jpeg", leg1: "Muito Bom",
+                img2: "src/images/marinada.jpeg", leg2: "Só Esperando Para Comer"
+            },
+            {
+                titulo: "Feijão",
+                data: "15/10/25",
+                texto: `Tivemos aula com a professora Anna, na qual aprendemos sobre o feijão e suas variedades. A professora apresentou técnicas e dicas importantes para o preparo, mostrando como alcançar um feijão bem cozido, saboroso e com a textura ideal.`,
+                img1: "src/images/feijao.jpeg", leg1: "Ficou Top !!",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Arroz",
+                data: "16/10/25",
+                texto: `A professora apresentou a aula sobre arroz e suas variedades, explicando as características de cada tipo e as melhores técnicas para obter um cozimento adequado e saboroso.`,
+                img1: "src/images/arroz.jpeg", leg1: "Arroz Selvagem. Bem Diferente kkkk",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Dia De Prova !!",
+                data: "17/10/25",
+                texto: `Hoje realizamos nossa primeira prova! Tivemos uma avaliação teórica e outra prática.
+    Na parte prática, precisamos apresentar os cortes que aprendemos ao longo das aulas e preparar algum caldo ou sopa de nossa escolha.<br><br>
+    Espero que todos tenham ido bem...`,
+                img1: "src/images/prova.jpeg", leg1: "Dia de Prova !!",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Continuação Das Provas",
+                data: "18/10/25",
+                texto: `Hoje continuamos a prova. Tivemos que executar as técnicas de ovos que o professor nos ensinou.
+    A prova foi tensa kkkk, pois precisávamos entregar quatro preparos usando apenas cinco ovos, então a margem para erro era bem pequena. <br><br>
+    Apesar da pressão, foi uma ótima oportunidade para aplicar tudo o que aprendemos.`,
+                img1: "src/images/provaovo.jpeg", leg1: "Ovo",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Risotos",
+                data: "21/10/25",
+                texto: `Tivemos uma das aulas mais aguardadas do curso: risoto! <br><br>
+    Aprendemos as técnicas essenciais para preparar um risoto cremoso, como a escolha do arroz ideal, a adição gradual do caldo e o ponto correto para finalizar o prato. Foi uma aula prática, intensa e muito saborosa.`,
+                img1: "src/images/risoto.jpeg", leg1: "Risoto Caprese",
+                img2: "src/images/risoto01.jpeg", leg2: "Ansiosos Para Come !!"
+            },
+            {
+                titulo: "Dessosa",
+                data: "23/10/25",
+                texto: `Hoje foi dia de dessossa de frango. A aula foi bastante tensa, pois o processo exige muita técnica, atenção e cuidado. O professor fez uma demonstração detalhada antes de começarmos, mostrando cada etapa com precisão. <br><br> Foi um desafio, mas também uma experiência muito importante para desenvolver habilidade e segurança na cozinha.  <br><br> Ontem postamos um vídeo sobre caldos no insta`,
+                img1: "src/images/frango.jpeg", leg1: "Assassinado Duas Vezes kkk",
+                img2: "src/images/frango2.jpeg", leg2: "Saboroso !!"
+            },
+            {
+                titulo: "Beef Wellington",
+                data: "31/10/25",
+                texto: `Tão aguardado quanto o risoto, hoje foi dia de finalizarmos o Beef Wellington.<br><br>
+    Ontem começamos o preparo com o filé mignon, a duxelle e as panquecas que envolvem a carne.No dia de hoje, fizemos a etapa final, envolvendo tudo na massa folhada e levando ao forno. <br><br>Sem dúvida, é um prato que reúne inúmeras técnicas, mas valeu muito a pena: ficou delicioso e foi uma experiência incrível de aprendizado. <br><br>Também estudamos os molhos-mãe da cozinha, entendendo suas bases, características e como eles servem de ponto de partida para diversos outros molhos clássicos.`,
+                img1: "src/images/bife.jpeg", leg1: "Maravilhoso !!",
+                img2: "src/images/bife1.jpeg", leg2: "Segura !!"
+            },
+            {
+                titulo: "Nota Dos Autores",
+                data: "01/11/25",
+                texto: `O Instagram do projeto está indo muito bem. A página apresenta bons números de alcance e engajamento, e várias pessoas têm aparecido curiosas sobre o curso. Isso mostra que estamos conseguindo cumprir exatamente o que imaginamos para o projeto: despertar interesse, divulgar nossas atividades e aproximar mais gente do universo da gastronomia. .`,
+                img1: "src/images/logo.jpeg", leg1: "Diário da Gastronomias",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Cocção Por Condução",
+                data: "03/11/25",
+                texto: `Tivemos aula sobre métodos de cocção por condução, entendendo como o calor é transferido diretamente do equipamento para o alimento. Aprendemos exemplos, aplicações e a importância desse método para alcançar texturas e resultados adequados nas preparações.`,
+                img1: "src/images/coc.jpeg", leg1: "hummm",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Cocção Por Convecção",
+                data: "04/11/25",
+                texto: `Aula sobre métodos de cocção por convecção, aprendendo como o calor circula pelo ar ou pelo líquido para cozinhar os alimentos de maneira mais uniforme. Estudamos exemplos, aplicações e a importância desse método para garantir preparações bem cozidas e com melhor controle de temperatura.`,
+                img1: "src/images/conv.jpeg", leg1: "É Muita Técnica !!",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Dia De Churrasco",
+                data: "05/11/25",
+                texto: `A tão deliciosa aula de churrasco finalmente chegou! Aprendemos várias técnicas e dicas importantes, e o cheiro de churrasco tomou conta do Senac inteiro.
+    <br><br>Essa aula fez parte do conteúdo de métodos de cocção por radiação, mostrando na prática como o calor é transferido diretamente para o alimento nesse tipo de preparo.`,
+                img1: "src/images/chu.jpeg", leg1: "Ai Ai Ai",
+                img2: "scr/images/Chu1.jpeg", leg2: "Queri Essa Aula Novamente !!"
+            },
+            {
+                titulo: "Aula de Purê",
+                data: "06/11/25",
+                texto: `Tivemos aula de purê, escondidinho e guisado, aprendendo técnicas importantes para cada preparação, desde o ponto correto do purê até a montagem do escondidinho e o cozimento do guisado.`,
+                img1: "src/images/pure.jpeg", leg1: "Purê Perfeito!! ",
+                img2: "src/images/pure01.jpeg", leg2: "Chique. "
+            },
+            {
+                titulo: "Técnicas Auxiliares",
+                data: "07/11/25",
+                texto: `Tivemos uma aula dedicada às técnicas auxiliares de cocção, explorando seus usos e aplicações dentro da cozinha profissional. <br><br>Foi uma aula muito rica, que ampliou nossa compreensão sobre como diferentes técnicas podem influenciar o sabor, a textura e a durabilidade dos ingredientes. Sem dúvida, um conteúdo essencial para quem deseja se aprofundar no universo da gastronomia.`,
+                img1: "src/images/confi.jpeg", leg1: "Lindo ",
+                img2: "", leg2: " "
+            },
+            {
+                titulo: "Confraternização",
+                data: "10/11/25",
+                texto: `Hoje tivemos um dia mais leve e diferente do habitual. Em vez de irmos para a cozinha, participamos de uma confraternização com toda a turma. Foi um momento descontraído, de descanso e integração entre os colegas.<br><br>A Geo trouxe seus famosos brigadeiros, que já eram muito comentados, e realmente estavam maravilhosos!`,
+                img1: "src/images/confra.jpeg", leg1: "Confraternização",
+                img2: "src/images/confra2.jpeg", leg2: "Brigadeiros da Geo"
+            },
+            {
+                titulo: "Limpeza De Peixe",
+                data: "11/11/25",
+                texto: `Tivemos uma aula dedicada à limpeza de peixes e frutos do mar, um conteúdo essencial para quem trabalha na cozinha profissional. O professor demonstrou passo a passo como identificar a frescura do peixe, como retirar as escamas, as vísceras e realizar o filetagem com segurança. <br><br>Também aprendemos sobre a limpeza de diferentes frutos do mar, entendendo as particularidades de cada um, como camarão, lula e mexilhões. Foi uma aula que exigiu bastante atenção e precisão.`,
+                img1: "src/images/lim.jpeg", leg1: "Famosas Vieiras",
+                img2: "src/images/lim1.jpeg", leg2: "Milena Tirou Onoda"
+            },
+            {
+                titulo: "Preparo Dos Peixes",
+                data: "12/11/25",
+                texto: `Hoje foi dia de preparar os peixes e frutos do mar que havíamos limpado na aula anterior. Colocamos em prática todo o processo, desde o corte correto até as técnicas de cocção ideais para cada tipo de ingrediente.<br><br>Trabalhamos com diferentes preparos, entendendo como o ponto, a textura e o sabor mudam de acordo com o método utilizado. Foi uma aula muito produtiva, pois conectou diretamente a parte de limpeza e manipulação com a execução dos pratos, reforçando a importância de cada etapa no resultado final.`,
+                img1: "src/images/peixe.jpeg", leg1: "Risoto Com Vieiras",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Empanamento",
+                data: "13/11/25",
+                texto: `Tivemos uma aula dedicada a empanamento e fritura. Aprendemos os diferentes tipos de empanamento <br><br>O professor também explicou as técnicas corretas de fritura, como a temperatura ideal do óleo, o tempo de cocção.`,
+                img1: "src/images/fritura.jpeg", leg1: "Todos No Aguardo Para Comer",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Empratamento",
+                data: "14/11/25",
+                texto: `A aula de hoje foi dedicada ao empratamento, um dos aspectos mais importantes da apresentação culinária. O professor explicou os princípios básicos de composição visual, como equilíbrio, contraste, cores, alturas e disposição dos elementos no prato.<br><br> Experimentamos alguns pratos também !! <br><br> o Carbonara estava perfeito`,
+                img1: "src/images/empratamento.jpeg", leg1: "Carbonara Espetacular !!",
+                img2: "src/images/empratamento1.jpeg", leg2: "Lindo Risoto "
+            },
+             {
+                titulo: "Miúdos",
+                data: "17/11/25",
+                texto: `Hoje foi uma aula dedicada aos miúdos, explorando suas técnicas de preparo e entendendo o valor de cada ingrediente dentro da gastronomia. O professor explicou a importância de aproveitar todas as partes do animal, destacando que os miúdos, apesar de muitas vezes subestimados, possuem grande sabor e podem resultar em pratos extremamente ricos e tradicionais.`,
+                img1: "src/images/lin.jpeg", leg1: "Surpreendente Língua de Boi",
+                img2: "", leg2: " "
+            },
+            {
+                titulo: "Hamburgues",
+                data: "19/11/25",
+                texto: `Outra aula muito aguardada pela turma foi a de hambúrguer. No primeiro dia, aprendemos sobre blends, entendendo a importância da combinação correta de cortes e porcentagem de gordura para garantir um hambúrguer saboroso, suculento e com boa textura.
+    Também preparamos acompanhamentos essenciais para montar um lanche completo e artesanal: geléia, picles, maionese caseira e cebola caramelizada.<br><br> Cada preparação trouxe técnicas diferentes e ajudou a compreender como cada elemento contribui para o equilíbrio de sabor.
+    <br><br>No segundo dia, partimos para a prática final: preparar e montar os lanches. A cozinha ficou com um cheiro maravilhoso, e os hambúrgueres ficaram muito bons`,
+                img1: "src/images/lanche.jpeg", leg1: "Suculento",
+                img2: "src/images/lanche1.jpeg", leg2: "Mandando Ver !!"
+            },
+            {
+                titulo: "Massas Frescas",
+                data: "24/11/25",
+                texto: `Após o feriado, retornamos às aulas com a professora Adriana para estudar massas frescas. Aprendemos a importância da proporção ideal de umidade na massa, entendendo como pequenas variações podem alterar textura, elasticidade e o resultado final do preparo. <br><br>A professora nos ensinou também a abrir a massa corretamente, seja com rolo ou na máquina, além de identificar o ponto ideal, aquele em que a massa fica lisa, uniforme e com a espessura adequada para diferentes tipos de preparo. Foi uma aula muito prática e detalhada, perfeita para desenvolver sensibilidade e técnica ao trabalhar com massas artesanais.`,
+                img1: "src/images/massa.jpeg", leg1: "Mão na Massa",
+                img2: "src/images/massa1.jpeg", leg2: "Perfeito !! "
+            },
+            {
+                titulo: "Massas Frescas curtas",
+                data: "25/11/25",
+                texto: `Dando continuidade ao conteúdo de massas, tivemos uma aula focada em massas frescas curtas. Aprendemos sobre os diferentes formatos e como cada um deles exige técnicas específicas de modelagem.`,
+                img1: "src/images/massa2.jpeg", leg1: "Obra De Arte",
+                img2: "src/images/massa3.jpeg", leg2: "Ótimo !!"
+            },
+            {
+                titulo: "Massas Frescas Recheadas",
+                data: "26/11/25",
+                texto: `Mais um dia de massas frescas, tivemos uma aula dedicada às massas recheadas. Aprendemos a preparar diferentes tipos de recheios, equilibrando sabor, textura e umidade para que a massa não rasgue durante o cozimento. <br><br> Para falar a verdade, foi uma das aulas mais difíceis, pois exigiu muita paciência e técnica para trabalhar a delicadeza das massas.`,
+                img1: "src/images/massa4.jpeg", leg1: "Muito Delicado",
+                img2: "src/images/massa5.jpeg", leg2: "Gracinha "
+            },
+            {
+                titulo: "Massas Frescas De Forno",
+                data: "27/11/25",
+                texto: `Tivemos uma aula sobre massas frescas de forno, como lasanha, aprendendo sobre sua estrutura e modo de preparo. A professora destacou a importância do branqueamento da massa, um pré-cozimento rápido que garante boa textura e facilita a montagem. Também vimos como o molho e a umidade influenciam no resultado final do prato.`,
+                img1: "src/images/massa7.jpeg", leg1: "O Que Essa Lasanha Estava Boa Não Está Escrito",
+                img2: "src/images/massa6.jpeg", leg2: "Esperando o Rango"
+            },
+            {
+                titulo: "Sala De Aula",
+                data: "28/11/25",
+                texto: `Hoje tivemos aula em sala, dedicada ao desenvolvimento do Projeto Integrador. Trabalhamos nas etapas principais, organizamos ideias e avançamos no planejamento das entregas.
+    <br><br>Além disso, tivemos uma aula sobre tendências da gastronomia, onde o professor apresentou inovações, novos comportamentos de consumo e movimentos que estão influenciando a cozinha atual.`,
+                img1: "src/images/tur.jpeg", leg1: "Turma Reunida",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Nota Dos Autores",
+                data: "28/11/25",
+                texto: `Estávamos um pouco estagnados em relação ao conteúdo do projeto, sem saber exatamente como continuar. Porém, durante a aula de hoje, tivemos uma boa ideia, ainda em segredo, que pode trazer um novo rumo ao nosso trabalho.
+    <br><br>Outro ponto discutido foi a possibilidade de criar um site, algo que já havia sido sugerido pelo professor. Agora estamos considerando essa ideia com mais atenção, pois pode complementar bem o Instagram e ampliar o alcance do projeto.
+    <br><br>No geral, sentimos que o projeto voltou a ganhar movimento. Acreditamos que ele está tomando forma e se tornando cada vez mais interessante e promissor.`,
+                img1: "src/images/logo.jpeg", leg1: "Diário da Gastronomias",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Massas Cozidas",
+                data: "01/12/25",
+                texto: `No dia de hoje, tivemos uma aula sobre massas cozidas, aprendendo o preparo e o ponto correto da massa utilizada em salgados. Trabalhamos técnicas de cozimento, textura, modelagem e equilíbrio entre massa e recheio. Foi uma aula prática, onde pudemos treinar diferentes formatos e desenvolver habilidade no manuseio desse tipo de massa. <br><br> Foi praticamente uma academia para dar ponto na massa.`,
+                img1: "src/images/cox.jpeg", leg1: "Salgados",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Massas Alimentícias",
+                data: "02/12/25",
+                texto: `Após algumas aulas com a professora Adriana, o professor Renan voltou com uma aula dedicada às massas alimentícias, trabalhando especificamente com massa de pastel e massa de empanada. Aprendemos as diferenças entre elas, desde a textura e a elasticidade até os tipos de gordura utilizados em cada receita.`,
+                img1: "src/images/emp.jpeg", leg1: "Empanada",
+                img2: "", leg2: ""
+            },
+            {
+                titulo: "Preparação Para a Amostra do PI",
+                data: "03/12/25",
+                texto: `A aula de hoje foi dedicada à preparação para a amostra dos Projetos Integradores do Senac, que acontecerá amanhã. Passamos o período discutindo ideias, organizando as etapas do projeto e definindo como seria nossa apresentação.
+    <br><br>Também trabalhamos na confecção de um cartaz, caprichando nas informações e no visual para representar bem o nosso grupo durante a exposição. Foi uma aula mais tranquila, porém muito importante para alinharmos tudo antes do grande dia.`,
+                img1: "src/images/turma01.jpeg", leg1: "Empenhados !!",
+                img2: "", leg2: ""
+            },
+    
+        ];
+    
+        // --- GERAÇÃO DADOS ---
+        const introPage = {
+            tipo: "intro", 
+            titulo: "Diário da Gastronomia", 
+            data: "2025",
+            texto: `
+                Sejam bem-vindos ao nosso Projeto Integrador!<br><br>
+                Somos alunos do curso Técnico em Gastronomia, unidade do Senac em Ourinhos/SP.<br>
+                Como parte da nossa formação, decidimos desenvolver esse projeto através das redes sociais, 
+                possibilitando levar conhecimentos gastronômicos e curiosidades.<br><br>
+                Esperamos que vocês gostem de acompanhar essa jornada!<br><br>
+                Gleice, Guilherme, Nathália, Milena e Vanderléia
+            `,
+            img1: "src/images/nossa_turma.jpeg", leg1: "Nossa Turma - 2025",
+            img2: "", leg2: ""
+        };
+    
+        const paginasSumario = [];
+        const totalAulas = aulasReais.length;
+        const totalPaginasSumario = Math.ceil(totalAulas / ITENS_POR_VISUALIZACAO);
+        const numPaginasLoop = totalPaginasSumario > 0 ? totalPaginasSumario : 1;
+    
+        for (let i = 0; i < numPaginasLoop; i++) {
+            const inicio = i * ITENS_POR_VISUALIZACAO;
+            const fim = inicio + ITENS_POR_VISUALIZACAO;
+            
+            // Pega o lote da página dupla
+            const loteCompleto = aulasReais.slice(inicio, fim);
+            
+            // Divide em Esquerda (8 itens) e Direita (9 itens)
+            const itensEsq = loteCompleto.slice(0, ITENS_ESQUERDA);
+            const itensDir = loteCompleto.slice(ITENS_ESQUERDA, ITENS_POR_VISUALIZACAO);
+            
+            const processarItens = (lista, offsetGlobal) => {
+                return lista.map((aula, idxLocal) => {
+                    const indexGlobal = offsetGlobal + idxLocal;
+                    const pgDestino = 1 + numPaginasLoop + indexGlobal;
+                    return { titulo: aula.titulo, destino: pgDestino, numeroVisual: pgDestino + 1 };
+                });
+            };
+    
+            paginasSumario.push({ 
+                tipo: "sumario", 
+                titulo: "Sumário", 
+                data: "", 
+                itensEsquerda: processarItens(itensEsq, inicio),
+                // Offset da direita é inicio + 8
+                itensDireita: processarItens(itensDir, inicio + ITENS_ESQUERDA)
+            });
+        }
+    
+        const caminhoDaLogo = "src/images/logo.jpeg"; 
+        const todasPaginas = [introPage, ...paginasSumario, ...aulasReais];
+        let indiceAtual = 0;
+    
+        function mudarPagina(direcao) {
+            const novoIndice = indiceAtual + direcao;
+            if (novoIndice >= 0 && novoIndice < todasPaginas.length) {
+                executarTrocaDePagina(novoIndice);
+            }
+        }
+    
+        function irParaPagina(indexDestino) {
+            if (indexDestino !== indiceAtual) {
+                executarTrocaDePagina(indexDestino);
+            }
+        }
+    
+        function executarTrocaDePagina(novoIndice) {
+            const blocoEsq = document.getElementById('bloco-esquerda');
+            const blocoDir = document.getElementById('bloco-direita');
+            if(blocoEsq) blocoEsq.classList.add('conteudo-oculto');
+            if(blocoDir) blocoDir.classList.add('conteudo-oculto');
+    
+            setTimeout(() => {
+                indiceAtual = novoIndice;
+                atualizarTela(); 
+                window.scrollTo(0, 0);
+                if(blocoEsq) blocoEsq.classList.remove('conteudo-oculto');
+                if(blocoDir) blocoDir.classList.remove('conteudo-oculto');
+            }, 500); 
+        }
+    
+        function gerarHtmlLista(itens) {
+            if (!itens || itens.length === 0) return '';
+            let html = '<ul class="lista-sumario">';
+            itens.forEach(item => {
+                html += `<li class="item-sumario" onclick="irParaPagina(${item.destino})"><span>${item.titulo}</span><span class="pg-numero">Pg ${item.numeroVisual}</span></li>`;
+            });
+            html += '</ul>';
+            return html;
+        }
+    
+        function atualizarTela() {
+            const pagina = todasPaginas[indiceAtual];
+            const containerFotos = document.getElementById('container-fotos');
+            const textoExtraDireita = document.getElementById('conteudo-direita-extra');
+            const textoEsquerda = document.getElementById('texto');
+            const containerLogoIntro = document.getElementById('container-logo-intro');
+            const paginaDireita = document.querySelector('.pagina-direita');
+            const btnSumarioTopo = document.getElementById('btn-ir-sumario');
+            const btnSumarioMobile = document.getElementById('btn-ir-sumario-mobile');
+    
+            document.getElementById('titulo').innerText = pagina.titulo;
+            document.getElementById('data').innerText = pagina.data;
+    
+            if (pagina.tipo === "intro") {
+                containerLogoIntro.innerHTML = `<img src="${caminhoDaLogo}" alt="Logo Diário da Gastronomia" class="logo-intro">`;
+                containerLogoIntro.style.display = "block";
+            } else {
+                containerLogoIntro.innerHTML = "";
+                containerLogoIntro.style.display = "none";
+            }
+    
+            const primeiroIndiceAula = 1 + numPaginasLoop;
+            const mostrarBtnSumario = indiceAtual >= primeiroIndiceAula;
+            if (!mostrarBtnSumario) {
+                btnSumarioTopo.style.visibility = 'hidden';
+                btnSumarioMobile.style.display = 'none';
+            } else {
+                btnSumarioTopo.style.visibility = 'visible';
+                if(window.innerWidth <= 1000) btnSumarioMobile.style.display = 'block';
+            }
+    
+            // LÓGICA DO SUMÁRIO
+            if (pagina.tipo === "sumario") {
+                // Adiciona a classe modo-sumario para aplicar a pauta e alinhar
+                paginaDireita.classList.add('modo-sumario');
+                
+                textoEsquerda.innerHTML = gerarHtmlLista(pagina.itensEsquerda);
+                
+                containerFotos.style.display = 'none';
+                textoExtraDireita.style.display = 'block';
+                textoExtraDireita.innerHTML = gerarHtmlLista(pagina.itensDireita);
+    
+            } else {
+                // Remove a classe modo-sumario e restaura o layout de fotos
+                paginaDireita.classList.remove('modo-sumario');
+                paginaDireita.style.justifyContent = 'center';
+                paginaDireita.style.paddingTop = '0px';
+                
+                textoEsquerda.innerHTML = pagina.texto;
+                containerFotos.style.display = 'flex';
+                textoExtraDireita.style.display = 'none';
+                
+                const elFoto1 = document.querySelector('.foto-1');
+                const elFoto2 = document.querySelector('.foto-2');
+    
+                if(pagina.img1 && pagina.img1 !== "") {
+                    elFoto1.style.display = 'block';
+                    document.getElementById('img1').src = pagina.img1;
+                    document.getElementById('legenda1').innerText = pagina.leg1;
+                    elFoto1.onclick = () => openModal(pagina.img1, pagina.leg1, false);
+    
+                    if (!pagina.img2 || pagina.img2 === "") {
+                        paginaDireita.style.justifyContent = 'center';
+                        paginaDireita.style.paddingTop = '0px';
+                        elFoto1.style.transform = 'scale(1.2) rotate(0deg)';
+                        elFoto1.onmouseover = () => elFoto1.style.transform = 'scale(1.25) rotate(0deg)';
+                        elFoto1.onmouseout = () => elFoto1.style.transform = 'scale(1.2) rotate(0deg)';
+                    } else {
+                        paginaDireita.style.justifyContent = 'flex-start';
+                        paginaDireita.style.paddingTop = '40px';
+                        elFoto1.style.transform = 'scale(1) rotate(2deg)';
+                        elFoto1.onmouseover = () => elFoto1.style.transform = 'scale(1.05) rotate(2deg)';
+                        elFoto1.onmouseout = () => elFoto1.style.transform = 'scale(1) rotate(2deg)';
+                    }
+                } else {
+                    elFoto1.style.display = 'none';
+                }
+    
+                if(pagina.img2 && pagina.img2 !== "") {
+                    elFoto2.style.display = 'block';
+                    document.getElementById('img2').src = pagina.img2;
+                    document.getElementById('legenda2').innerText = pagina.leg2;
+                    elFoto2.onclick = () => openModal(pagina.img2, pagina.leg2, true);
+                    
+                    elFoto2.style.transform = 'scale(1) rotate(-3deg)';
+                    elFoto2.onmouseover = () => elFoto2.style.transform = 'scale(1.05) rotate(-3deg)';
+                    elFoto2.onmouseout = () => elFoto2.style.transform = 'scale(1) rotate(-3deg)';
+                } else {
+                    elFoto2.style.display = 'none';
+                }
+            }
+    
+            const btnVoltarDesk = document.getElementById('btn-voltar-desk');
+            const btnAvancarDesk = document.getElementById('btn-avancar-desk');
+            const btnVoltarMob = document.getElementById('btn-voltar-mob');
+            const btnAvancarMob = document.getElementById('btn-avancar-mob');
+    
+            if (indiceAtual === 0) {
+                btnVoltarDesk.style.visibility = 'hidden';
+                btnVoltarMob.style.visibility = 'hidden';
+            } else {
+                btnVoltarDesk.style.visibility = 'visible';
+                btnVoltarMob.style.visibility = 'visible';
+            }
+    
+            if (indiceAtual === todasPaginas.length - 1) {
+                btnAvancarDesk.style.visibility = 'hidden';
+                btnAvancarMob.style.visibility = 'hidden';
+            } else {
+                btnAvancarDesk.style.visibility = 'visible';
+                btnAvancarMob.style.visibility = 'visible';
+            }
+        }
+    
+        function openModal(imgSrc, legendaText, isBlueFita) {
+            const modal = document.getElementById('modal-overlay');
+            const modalImg = document.getElementById('modal-img');
+            const modalLegenda = document.getElementById('modal-legenda');
+            const fita = modal.querySelector('.fita');
+            modalImg.src = imgSrc;
+            modalLegenda.innerText = legendaText;
+            if (isBlueFita) { fita.classList.add('fita-azul'); } else { fita.classList.remove('fita-azul'); }
+            modal.style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+    
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "ArrowRight") { mudarPagina(1); } else if (event.key === "ArrowLeft") { mudarPagina(-1); }
+        });
+    
+        window.addEventListener('resize', atualizarTela);
+        atualizarTela(); 
+    </script>
+</body>
+</html>
